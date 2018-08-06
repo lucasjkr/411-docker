@@ -6,8 +6,6 @@ RUN apt-get update && \
     git \
     libxml2-dev \
     libcurl4-openssl-dev
-#    cron \
-#    supervisor
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 RUN docker-php-ext-configure \
     pdo_mysql --with-pdo-mysql=mysqlnd
@@ -22,30 +20,21 @@ RUN a2enmod headers rewrite
 
 WORKDIR /var/www/411
 RUN curl -L https://github.com/etsy/411/releases/download/v1.5.0/release.tgz | tar xz
-RUN COMPOSER=composer-es2x.json composer install --no-dev --optimize-autoloader
+RUN COMPOSER=composer-es6x.json composer install --no-dev --optimize-autoloader
 
 RUN mkdir /data
 COPY config/411.conf /data/000-default.conf
 RUN ln -sf /data/000-default.conf /etc/apache2/sites-available/000-default.conf
-#RUN sqlite3 /data/data.db < db.sql
-#RUN ln -sf /data/data.db data.db
-COPY config/config.php .
 
+COPY config/config.php .
 COPY config/init.php .
-#RUN ./init.php
-#RUN rm init.php
 
 RUN chmod ugo+rx -R /data
 RUN chown www-data:www-data -R /data
 
-#VOLUME /data
-
-COPY config/supervisord.conf /root/supervisord.conf
 COPY config/mail.ini /usr/local/etc/php/conf.d/
 COPY config/411_cron /etc/cron.d/
 
 EXPOSE 80
 
 CMD /usr/local/bin/apache2-foreground
-#CMD ["/usr/bin/supervisord", "-c", "/root/supervisord.conf"]
-###
