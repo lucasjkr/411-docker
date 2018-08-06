@@ -1,0 +1,39 @@
+FROM php:7-apache
+
+RUN apt-get update && \
+    apt-get -y install \
+    unzip \
+    git \
+    libxml2-dev \
+    libcurl4-openssl-dev \
+    cron
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+RUN docker-php-ext-configure \
+    pdo_mysql --with-pdo-mysql=mysqlnd
+RUN docker-php-ext-install \
+    xml \
+    pdo_mysql \
+    mbstring \
+    curl \
+    pcntl
+
+RUN a2enmod headers rewrite
+
+WORKDIR /var/www/411
+RUN curl -L https://github.com/etsy/411/releases/download/v1.5.0/release.tgz | tar xz
+RUN COMPOSER=composer-es6x.json composer install --no-dev --optimize-autoloader
+
+RUN mkdir /data
+COPY config/411.conf /data/000-default.conf
+RUN ln -sf /data/000-default.conf /etc/apache2/sites-available/000-default.conf
+
+COPY config/config.php .
+COPY config/init.php .
+
+RUN chmod ugo+rx -R /data
+RUN chown www-data:www-data -R /data
+
+COPY config/mail.ini /usr/local/etc/php/conf.d/
+COPY config/411_cron /etc/cron.d/
+
+CMD /usr/local/bin/apache2-foreground
