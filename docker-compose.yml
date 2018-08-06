@@ -5,7 +5,7 @@ services:
     networks:
     - fouroneone
     ports:
-     - "8080:80"
+     - "80:80"
 
   mysql:
     container_name: mysql

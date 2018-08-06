@@ -6,8 +6,8 @@ RUN apt-get update && \
     git \
     libxml2-dev \
     libcurl4-openssl-dev \
-    cron
-#    supervisor
+    cron \
+    supervisor
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 RUN docker-php-ext-configure \
     pdo_mysql --with-pdo-mysql=mysqlnd
