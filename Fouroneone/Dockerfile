@@ -32,8 +32,7 @@ COPY config/411.conf /data/000-default.conf
 RUN ln -sf /data/000-default.conf /etc/apache2/sites-available/000-default.conf
 #RUN sqlite3 /data/data.db < db.sql
 #RUN ln -sf /data/data.db data.db
-COPY config/config.php /data/config.php
-RUN ln -sf /data/config.php config.php
+COPY config.php .
 
 COPY config/init.php .
 #RUN ./init.php
