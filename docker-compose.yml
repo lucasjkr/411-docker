@@ -20,3 +20,7 @@ services:
     - fouroneone
     ports:
     - "3306:3306"
+
+networks:
+  fouroneone:
+    driver: bridge
