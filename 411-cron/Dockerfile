@@ -1,7 +1,11 @@
-FROM php:7-apache
+#FROM php:7-apache
+FROM phusion/baseimage
 
 RUN apt-get update && \
     apt-get -y install \
+    curl \
+    php7.0 \
+    php7.0-mysql \
     unzip \
     git \
     libxml2-dev \
@@ -34,12 +38,17 @@ RUN chmod ugo+rx -R /data
 RUN chown www-data:www-data -R /data
 
 COPY config/mail.ini /usr/local/etc/php/conf.d/
-COPY config/411_cron /etc/cron.d/
-
+#COPY config/411_cron /etc/cron.d/
 # Give execution rights on the cron job
-RUN chmod 0644 /etc/cron.d/411_cron
+#RUN chmod 0644 /etc/cron.d/411_cron
 
-# Create the log file to be able to run tail
+RUN printf '* * * * * root cd /var/www/411/bin && /usr/local/bin/php cron.php >> /var/log/cron.log 2>&1\n#' >> /root/crontab
+RUN printf '* * * * * root cd /var/www/411/bin && /usr/local/bin/php worker.php >> /var/log/cron.log 2>&1\n#' >> /root/crontab
 RUN touch /var/log/cron.log
 
-CMD cron && tail -f /var/log/cron.log
+# Create the log file to be able to run tail
+#RUN touch /var/log/cron.log
+
+#RUN echo "/usr/sbin/cron -f -L 8 $$ tail -f /var/log/cron.log" > /usr/local/bin/docker-entrypoint.sh
+
+CMD /usr/sbin/cron -f -L 0 && tail -f /var/log/cron.log
