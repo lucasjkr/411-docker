@@ -2,9 +2,21 @@ version: '3'
 services:
   fouroneone:
     build: Fouroneone/
+    networks:
+    - fouroneone
     ports:
      - "8080:80"
-  es:
-    image: "elasticsearch:2.4"
+
+  mysql:
+    container_name: mysql
+    build:
+      context: Mysql/
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: fouroneone
+      MYSQL_USER: fouroneone
+      MYSQL_PASSWORD: samplepw
+    networks:
+    - fouroneone
     ports:
-     - "9200:9200"
+    - "3306:3306"
