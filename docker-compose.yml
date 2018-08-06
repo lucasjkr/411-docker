@@ -1,6 +1,7 @@
 version: '3'
 services:
   fouroneone:
+    container_name: fouroneone
     build: Fouroneone/
     networks:
     - fouroneone
@@ -15,9 +16,11 @@ services:
       MYSQL_ROOT_PASSWORD: example
       MYSQL_DATABASE: fouroneone
       MYSQL_USER: fouroneone
-      MYSQL_PASSWORD: samplepw
+      MYSQL_PASSWORD: fouroneone
     networks:
     - fouroneone
+    volumes:
+    - ./MySQL/sql/db_mysql.sql:/docker-entrypoint-initdb.d/01-fouroneoned_db.sql:ro
     ports:
     - "3306:3306"
 
