@@ -35,9 +35,9 @@ RUN ln -sf /data/data.db data.db
 COPY config.php /data/config.php
 RUN ln -sf /data/config.php config.php
 
-COPY init.php .
-RUN ./init.php
-RUN rm init.php
+#COPY init.php .
+#RUN ./init.php
+#RUN rm init.php
 
 RUN chmod ugo+rx -R /data
 RUN chown www-data:www-data -R /data
