@@ -28,11 +28,11 @@ RUN curl -L https://github.com/etsy/411/releases/download/v1.5.0/release.tgz | t
 RUN COMPOSER=composer-es2x.json composer install --no-dev --optimize-autoloader
 
 RUN mkdir /data
-COPY 411.conf /data/000-default.conf
+COPY config/411.conf /data/000-default.conf
 RUN ln -sf /data/000-default.conf /etc/apache2/sites-available/000-default.conf
 RUN sqlite3 /data/data.db < db.sql
 RUN ln -sf /data/data.db data.db
-COPY config.php /data/config.php
+COPY config/config.php /data/config.php
 RUN ln -sf /data/config.php config.php
 
 #COPY init.php .
@@ -44,9 +44,10 @@ RUN chown www-data:www-data -R /data
 
 VOLUME /data
 
-COPY supervisord.conf /root/supervisord.conf
-COPY mail.ini /usr/local/etc/php/conf.d/
-COPY 411_cron /etc/cron.d/
+COPY config/supervisord.conf /root/supervisord.conf
+COPY config/mail.ini /usr/local/etc/php/conf.d/
+COPY config/411_cron /etc/cron.d/
 
 EXPOSE 80
 CMD ["/usr/bin/supervisord", "-c", "/root/supervisord.conf"]
+###
