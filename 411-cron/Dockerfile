@@ -36,4 +36,10 @@ RUN chown www-data:www-data -R /data
 COPY config/mail.ini /usr/local/etc/php/conf.d/
 COPY config/411_cron /etc/cron.d/
 
-CMD /usr/local/bin/apache2-foreground
+# Give execution rights on the cron job
+RUN chmod 0644 /etc/cron.d/411_cron
+
+# Create the log file to be able to run tail
+RUN touch /var/log/cron.log
+
+CMD cron && tail -f /var/log/cron.log

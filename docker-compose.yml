@@ -1,6 +1,6 @@
 version: '3'
 services:
-  fouroneone:
+  fouroneoneweb:
     container_name: 411web
     build: 411-web/
     networks:
@@ -8,13 +8,11 @@ services:
     ports:
      - "80:80"
 
-  fouroneone:
+  fouroneonecron:
     container_name: 411cron
     build: 411-cron/
     networks:
     - fouroneone
-    ports:
-    - "80:80"
 
   mysql:
     container_name: mysql
