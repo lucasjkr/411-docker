@@ -5,9 +5,9 @@ RUN apt-get update && \
     unzip \
     git \
     libxml2-dev \
-    libcurl4-openssl-dev \
-    cron \
-    supervisor
+    libcurl4-openssl-dev
+#    cron \
+#    supervisor
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 RUN docker-php-ext-configure \
     pdo_mysql --with-pdo-mysql=mysqlnd
@@ -45,5 +45,7 @@ COPY config/mail.ini /usr/local/etc/php/conf.d/
 COPY config/411_cron /etc/cron.d/
 
 EXPOSE 80
-CMD ["/usr/bin/supervisord", "-c", "/root/supervisord.conf"]
+
+CMD /usr/local/bin/apache2-foreground
+#CMD ["/usr/bin/supervisord", "-c", "/root/supervisord.conf"]
 ###
