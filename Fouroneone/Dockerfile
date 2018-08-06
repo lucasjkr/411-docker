@@ -41,7 +41,7 @@ COPY config/init.php .
 RUN chmod ugo+rx -R /data
 RUN chown www-data:www-data -R /data
 
-VOLUME /data
+#VOLUME /data
 
 COPY config/supervisord.conf /root/supervisord.conf
 COPY config/mail.ini /usr/local/etc/php/conf.d/
