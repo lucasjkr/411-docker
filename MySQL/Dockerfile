@@ -4,6 +4,7 @@ FROM debian:stretch-slim
 RUN groupadd -r mysql && useradd -r -g mysql mysql
 
 RUN apt-get update && apt-get install -y --no-install-recommends gnupg dirmngr && rm -rf /var/lib/apt/lists/*
+#RUN apt-get update && apt-get install -y --no-install-recommends dirmngr && rm -rf /var/lib/apt/lists/*
 
 # add gosu for easy step-down from root
 ENV GOSU_VERSION 1.7
@@ -21,12 +22,13 @@ RUN set -x \
 	&& apt-get purge -y --auto-remove ca-certificates wget
 
 RUN mkdir /docker-entrypoint-initdb.d
+ADD sql/db_mysql.sql /docker-entrypoint-initdb.d/db_mysql.sql
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
 # for MYSQL_RANDOM_ROOT_PASSWORD
 		pwgen \
 # for mysql_ssl_rsa_setup
-		openssl \
+#		openssl \
 # FATAL ERROR: please install the following Perl modules before executing /usr/local/mysql/scripts/mysql_install_db:
 # File::Basename
 # File::Copy
@@ -35,15 +37,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		perl \
 	&& rm -rf /var/lib/apt/lists/*
 
-RUN set -ex; \
-# gpg: key 5072E1F5: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
-	key='A4A9406876FCBD3C456770C88C718D3B5072E1F5'; \
-	export GNUPGHOME="$(mktemp -d)"; \
-	gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
-	gpg --export "$key" > /etc/apt/trusted.gpg.d/mysql.gpg; \
-	gpgconf --kill all; \
-	rm -rf "$GNUPGHOME"; \
-	apt-key list > /dev/null
+#RUN set -ex; \
+##    gpg: key 5072E1F5: public key "MySQL Release Engineering <mysql-build@oss.oracle.com>" imported
+#	key='A4A9406876FCBD3C456770C88C718D3B5072E1F5'; \
+#	export GNUPGHOME="$(mktemp -d)"; \
+#	gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
+#	gpg --export "$key" > /etc/apt/trusted.gpg.d/mysql.gpg; \
+#	gpgconf --kill all; \
+#	rm -rf "$GNUPGHOME"; \
+#	apt-key list > /dev/null
 
 ENV MYSQL_MAJOR 5.7
 ENV MYSQL_VERSION 5.7.23-1debian9
@@ -58,7 +60,8 @@ RUN { \
 		echo mysql-community-server mysql-community-server/re-root-pass password ''; \
 		echo mysql-community-server mysql-community-server/remove-test-db select false; \
 	} | debconf-set-selections \
-	&& apt-get update && apt-get install -y mysql-server="${MYSQL_VERSION}" && rm -rf /var/lib/apt/lists/* \
+	# Added --allow-unauthenticated for the time being til GPG can recognize the key
+	&& apt-get update && apt-get install --allow-unauthenticated -y mysql-server="${MYSQL_VERSION}" && rm -rf /var/lib/apt/lists/* \
 	&& rm -rf /var/lib/mysql && mkdir -p /var/lib/mysql /var/run/mysqld \
 	&& chown -R mysql:mysql /var/lib/mysql /var/run/mysqld \
 # ensure that /var/run/mysqld (used for socket and lock files) is writable regardless of the UID our mysqld instance ends up having at runtime
@@ -70,7 +73,7 @@ RUN { \
 # don't reverse lookup hostnames, they are usually another container
 	&& echo '[mysqld]\nskip-host-cache\nskip-name-resolve' > /etc/mysql/conf.d/docker.cnf
 
-VOLUME /var/lib/mysql
+#VOLUME /var/lib/mysql
 
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN ln -s usr/local/bin/docker-entrypoint.sh /entrypoint.sh # backwards compat
