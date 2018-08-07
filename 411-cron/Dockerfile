@@ -59,6 +59,9 @@ RUN chown www-data:www-data -R /data
 COPY config/mail.ini /usr/local/etc/php/conf.d/
 RUN touch /var/log/cron.log
 
+COPY cron.php /var/www/411/bin/
+COPY worker.php /var/www/411/bin/
+
 COPY config/cron-entrypoint.sh /cron-entrypoint.sh
 RUN chmod +x /cron-entrypoint.sh
 ENTRYPOINT ["/cron-entrypoint.sh"]
