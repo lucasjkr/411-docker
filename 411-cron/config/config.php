@@ -104,7 +104,7 @@ $config['elasticsearch'] = [
 
     # Configuration for the 411 Alerts index.
     'alerts' => [
-        'hosts' => ['http://es:9200'],
+        'hosts' => ['http://elasticsearch:9200'],
         'index_hosts' => [],
         'ssl_cert' => null,
         'index' => null,
@@ -115,11 +115,25 @@ $config['elasticsearch'] = [
         'src_url' => null,
     ],
     # Configuration for the logstash index that 411 queries.
-    'logstash' => [
-        'hosts' => ['http://es:9200'],
+    'metricbeat' => [
+        'hosts' => ['http://elasticsearch:9200'],
         'index_hosts' => [],
         'ssl_cert' => null,
-        'index' => '[logstash-]Y.m.d',
+#        'index' => '[metricbeat-6.3.2-]Y.m.d',
+        'index' => '[metricbeat-6.3.2-]Y.m',
+        'date_based' => true,
+        'date_interval' => 'd',
+        'date_field' => '@timestamp',
+        'date_type' => null,
+        'src_url' => null,
+    ],
+    # Configuration for the logstash index that 411 queries.
+    'winlogbeat' => [
+        'hosts' => ['http://elasticsearch:9200'],
+        'index_hosts' => [],
+        'ssl_cert' => null,
+#        'index' => '[winlogbeat-6.3.2-]Y.m.d',
+        'index' => '[winlogbeat-6.3.2-]Y.m',
         'date_based' => true,
         'date_interval' => 'd',
         'date_field' => '@timestamp',
