@@ -15,11 +15,6 @@ services:
     build: 411-cron/
     networks:
       - fouroneone
-    command:
-      - '* * * * * /usr/bin/php /var/www/411/bin/cron.php  >>/var/log/cron.log 2>&1'
-      - '* * * * * /usr/bin/php /var/www/411/bin/worker.php  >>/var/log/cron.log 2>&1'
-#       - '* * * * * /usr/bin/php /var/www/411/bin/cron.php  >>/proc/$(cat /var/run/crond.pid)/fd/1 2>&1'
-#       - '* * * * * /usr/bin/php /var/www/411/bin/worker.php  >>/proc/$(cat /var/run/crond.pid)/fd/1 2>&1'
     depends_on:
       - mysql
 
