@@ -7,12 +7,21 @@ services:
     - fouroneone
     ports:
      - "80:80"
+    depends_on:
+      - mysql
 
   fouroneonecron:
     container_name: 411cron
     build: 411-cron/
     networks:
-    - fouroneone
+      - fouroneone
+    command:
+      - '* * * * * /usr/bin/php /var/www/411/bin/cron.php  >>/var/log/cron.log 2>&1'
+      - '* * * * * /usr/bin/php /var/www/411/bin/worker.php  >>/var/log/cron.log 2>&1'
+#       - '* * * * * /usr/bin/php /var/www/411/bin/cron.php  >>/proc/$(cat /var/run/crond.pid)/fd/1 2>&1'
+#       - '* * * * * /usr/bin/php /var/www/411/bin/worker.php  >>/proc/$(cat /var/run/crond.pid)/fd/1 2>&1'
+    depends_on:
+      - mysql
 
   mysql:
     container_name: mysql
